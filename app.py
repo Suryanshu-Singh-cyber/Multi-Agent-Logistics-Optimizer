@@ -23,3 +23,53 @@ for i, (x_coord, y_coord) in enumerate(packages):
     ax.text(x_coord, y_coord, str(i), fontsize=8)
 
 st.pyplot(fig)
+from ortools.constraint_solver import routing_enums_pb2
+from ortools.constraint_solver import pywrapcp
+import numpy as np
+
+# Create distance matrix
+def create_distance_matrix(locations):
+    size = len(locations)
+    matrix = np.zeros((size, size))
+
+    for i in range(size):
+        for j in range(size):
+            matrix[i][j] = ((locations[i][0] - locations[j][0]) ** 2 +
+                            (locations[i][1] - locations[j][1]) ** 2) ** 0.5
+    return matrix
+
+distance_matrix = create_distance_matrix(packages)
+
+# Solve TSP
+def solve_tsp(distance_matrix):
+    manager = pywrapcp.RoutingIndexManager(len(distance_matrix), 1, 0)
+    routing = pywrapcp.RoutingModel(manager)
+
+    def distance_callback(from_index, to_index):
+        return int(distance_matrix[manager.IndexToNode(from_index)]
+                                     [manager.IndexToNode(to_index)])
+
+    transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+    solution = routing.SolveWithParameters(
+        pywrapcp.DefaultRoutingSearchParameters()
+    )
+
+    route = []
+    index = routing.Start(0)
+    while not routing.IsEnd(index):
+        route.append(manager.IndexToNode(index))
+        index = solution.Value(routing.NextVar(index))
+
+    return route
+
+route = solve_tsp(distance_matrix)
+
+# Draw route
+route_x = [packages[i][0] for i in route]
+route_y = [packages[i][1] for i in route]
+
+ax.plot(route_x, route_y, color='red')
+
+st.pyplot(fig)
