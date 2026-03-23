@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from ortools.constraint_solver import pywrapcp
 
-st.title("🚀 Nexus-Route: Multi-Agent Logistics Optimizer")
+st.title("🚀 Nexus-Route: Intelligent Multi-Agent System")
 
 # -----------------------------
 # STEP 1: Generate Packages
@@ -17,13 +17,32 @@ packages = generate_packages()
 points = np.array(packages)
 
 # -----------------------------
-# STEP 2: Clustering (5 Vans)
+# STEP 2: Clustering
 # -----------------------------
 kmeans = KMeans(n_clusters=5, random_state=0)
 labels = kmeans.fit_predict(points)
 
 # -----------------------------
-# STEP 3: Distance Matrix
+# STEP 3: Agent State
+# -----------------------------
+agents = []
+
+for i in range(5):
+    agent = {
+        "id": i,
+        "battery": random.randint(20, 100),  # random battery
+        "status": "Active",
+        "packages": points[labels == i]
+    }
+    
+    # If battery low → needs help
+    if agent["battery"] < 30:
+        agent["status"] = "Low Battery ⚠️"
+    
+    agents.append(agent)
+
+# -----------------------------
+# STEP 4: Distance Matrix
 # -----------------------------
 def create_distance_matrix(locations):
     size = len(locations)
@@ -36,7 +55,7 @@ def create_distance_matrix(locations):
     return matrix
 
 # -----------------------------
-# STEP 4: Solve TSP
+# STEP 5: Solve TSP
 # -----------------------------
 def solve_tsp(distance_matrix):
     manager = pywrapcp.RoutingIndexManager(len(distance_matrix), 1, 0)
@@ -65,17 +84,21 @@ def solve_tsp(distance_matrix):
     return route
 
 # -----------------------------
-# STEP 5: Plot Multi-Agent Routes
+# STEP 6: Plot + Logic
 # -----------------------------
 fig, ax = plt.subplots()
-
 colors = ['red', 'blue', 'green', 'purple', 'orange']
 
-for cluster_id in range(5):
-    cluster_points = points[labels == cluster_id]
+for agent in agents:
+    cluster_points = agent["packages"]
 
-    # Skip if too small
     if len(cluster_points) < 2:
+        continue
+
+    # If battery low → simulate failure
+    if agent["status"] == "Low Battery ⚠️":
+        ax.scatter(cluster_points[:, 0], cluster_points[:, 1],
+                   color='black', label=f"Van {agent['id']} (Low Battery)")
         continue
 
     distance_matrix = create_distance_matrix(cluster_points)
@@ -85,15 +108,21 @@ for cluster_id in range(5):
 
     # Plot points
     ax.scatter(cluster_points[:, 0], cluster_points[:, 1],
-               color=colors[cluster_id], label=f"Van {cluster_id+1}")
-
-    # Label points
-    for i, (x_coord, y_coord) in enumerate(cluster_points):
-        ax.text(x_coord, y_coord, str(i), fontsize=7)
+               color=colors[agent["id"]], label=f"Van {agent['id']}")
 
     # Plot route
     ax.plot(route_points[:, 0], route_points[:, 1],
-            color=colors[cluster_id])
+            color=colors[agent["id"]])
+
+# -----------------------------
+# STEP 7: UI INFO PANEL
+# -----------------------------
+st.sidebar.header("🚚 Agent Status")
+
+for agent in agents:
+    st.sidebar.write(
+        f"Van {agent['id']} | Battery: {agent['battery']}% | Status: {agent['status']}"
+    )
 
 ax.legend()
 st.pyplot(fig)
