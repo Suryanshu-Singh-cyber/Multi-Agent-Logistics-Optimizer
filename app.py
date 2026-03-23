@@ -5,7 +5,16 @@ import numpy as np
 from sklearn.cluster import KMeans
 from ortools.constraint_solver import pywrapcp
 
-st.title("🚀 Nexus-Route: Cooperative Multi-Agent System")
+st.set_page_config(layout="wide")
+st.title("🚀 Nexus-Route: Intelligent Multi-Agent Logistics System")
+
+# -----------------------------
+# UI CONTROLS
+# -----------------------------
+num_packages = st.sidebar.slider("📦 Number of Packages", 20, 100, 50)
+num_agents = st.sidebar.slider("🚚 Number of Vans", 2, 8, 5)
+
+simulate_traffic = st.sidebar.button("🚧 Simulate Traffic Jam")
 
 # -----------------------------
 # STEP 1: Generate Packages
@@ -13,13 +22,13 @@ st.title("🚀 Nexus-Route: Cooperative Multi-Agent System")
 def generate_packages(n=50):
     return [(random.randint(0, 100), random.randint(0, 100)) for _ in range(n)]
 
-packages = generate_packages()
+packages = generate_packages(num_packages)
 points = np.array(packages)
 
 # -----------------------------
 # STEP 2: Clustering
 # -----------------------------
-kmeans = KMeans(n_clusters=5, random_state=0)
+kmeans = KMeans(n_clusters=num_agents, random_state=0)
 labels = kmeans.fit_predict(points)
 
 # -----------------------------
@@ -27,7 +36,7 @@ labels = kmeans.fit_predict(points)
 # -----------------------------
 agents = []
 
-for i in range(5):
+for i in range(num_agents):
     agent = {
         "id": i,
         "battery": random.randint(20, 100),
@@ -41,34 +50,30 @@ for i in range(5):
     agents.append(agent)
 
 # -----------------------------
-# STEP 4: Distance Function
+# STEP 4: AI NEGOTIATOR
 # -----------------------------
-def distance(p1, p2):
-    return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+def ai_negotiator(low_agent, agents):
+    best_agent = None
+    best_score = -1
+
+    for agent in agents:
+        if agent["status"] == "Active":
+            score = agent["battery"] - len(agent["packages"]) * 2
+            if score > best_score:
+                best_score = score
+                best_agent = agent
+
+    return best_agent
 
 # -----------------------------
-# STEP 5: REALLOCATION LOGIC 🔥
+# STEP 5: REALLOCATION (AI-based)
 # -----------------------------
 for agent in agents:
     if agent["status"] == "Low Battery ⚠️":
         for pkg in agent["packages"]:
-            best_agent = None
-            best_dist = float("inf")
-
-            for other in agents:
-                if other["status"] == "Active":
-                    # Compare with center of cluster
-                    center = np.mean(other["packages"], axis=0) if len(other["packages"]) > 0 else [0,0]
-                    d = distance(pkg, center)
-
-                    if d < best_dist:
-                        best_dist = d
-                        best_agent = other
-
+            best_agent = ai_negotiator(agent, agents)
             if best_agent:
                 best_agent["packages"].append(pkg)
-
-        # Clear packages from failed agent
         agent["packages"] = []
 
 # -----------------------------
@@ -80,8 +85,14 @@ def create_distance_matrix(locations):
 
     for i in range(size):
         for j in range(size):
-            matrix[i][j] = ((locations[i][0] - locations[j][0]) ** 2 +
-                            (locations[i][1] - locations[j][1]) ** 2) ** 0.5
+            dist = ((locations[i][0] - locations[j][0]) ** 2 +
+                    (locations[i][1] - locations[j][1]) ** 2) ** 0.5
+
+            if simulate_traffic:
+                dist *= random.uniform(1.2, 2.0)  # traffic increases cost
+
+            matrix[i][j] = dist
+
     return matrix
 
 # -----------------------------
@@ -114,10 +125,13 @@ def solve_tsp(distance_matrix):
     return route
 
 # -----------------------------
-# STEP 8: Plot
+# STEP 8: Visualization
 # -----------------------------
 fig, ax = plt.subplots()
-colors = ['red', 'blue', 'green', 'purple', 'orange']
+
+colors = ['red', 'blue', 'green', 'purple', 'orange', 'brown', 'pink', 'cyan']
+
+total_distance = 0
 
 for agent in agents:
     cluster_points = np.array(agent["packages"])
@@ -135,21 +149,35 @@ for agent in agents:
 
     route_points = cluster_points[route]
 
+    # distance calculation
+    for i in range(len(route_points) - 1):
+        total_distance += np.linalg.norm(route_points[i] - route_points[i+1])
+
     ax.scatter(cluster_points[:, 0], cluster_points[:, 1],
                color=colors[agent["id"]], label=f"Van {agent['id']}")
 
     ax.plot(route_points[:, 0], route_points[:, 1],
             color=colors[agent["id"]])
 
+ax.legend()
+st.pyplot(fig)
+
 # -----------------------------
-# STEP 9: Sidebar Info
+# STEP 9: METRICS DASHBOARD
+# -----------------------------
+active_vans = sum(1 for a in agents if a["status"] == "Active")
+
+st.sidebar.header("📊 System Metrics")
+st.sidebar.metric("Total Packages", num_packages)
+st.sidebar.metric("Active Vans", active_vans)
+st.sidebar.metric("Total Distance", round(total_distance, 2))
+
+# -----------------------------
+# STEP 10: AGENT STATUS
 # -----------------------------
 st.sidebar.header("🚚 Agent Status")
 
 for agent in agents:
     st.sidebar.write(
-        f"Van {agent['id']} | Battery: {agent['battery']}% | Packages: {len(agent['packages'])} | Status: {agent['status']}"
+        f"Van {agent['id']} | 🔋 {agent['battery']}% | 📦 {len(agent['packages'])} | {agent['status']}"
     )
-
-ax.legend()
-st.pyplot(fig)
