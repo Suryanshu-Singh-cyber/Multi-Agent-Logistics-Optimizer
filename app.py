@@ -2,9 +2,10 @@ import streamlit as st
 import random
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.cluster import KMeans
 from ortools.constraint_solver import pywrapcp
 
-st.title("🚀 Nexus-Route: Logistics Optimizer")
+st.title("🚀 Nexus-Route: Multi-Agent Logistics Optimizer")
 
 # -----------------------------
 # STEP 1: Generate Packages
@@ -13,9 +14,16 @@ def generate_packages(n=50):
     return [(random.randint(0, 100), random.randint(0, 100)) for _ in range(n)]
 
 packages = generate_packages()
+points = np.array(packages)
 
 # -----------------------------
-# STEP 2: Create Distance Matrix
+# STEP 2: Clustering (5 Vans)
+# -----------------------------
+kmeans = KMeans(n_clusters=5, random_state=0)
+labels = kmeans.fit_predict(points)
+
+# -----------------------------
+# STEP 3: Distance Matrix
 # -----------------------------
 def create_distance_matrix(locations):
     size = len(locations)
@@ -27,10 +35,8 @@ def create_distance_matrix(locations):
                             (locations[i][1] - locations[j][1]) ** 2) ** 0.5
     return matrix
 
-distance_matrix = create_distance_matrix(packages)
-
 # -----------------------------
-# STEP 3: Solve TSP
+# STEP 4: Solve TSP
 # -----------------------------
 def solve_tsp(distance_matrix):
     manager = pywrapcp.RoutingIndexManager(len(distance_matrix), 1, 0)
@@ -58,28 +64,36 @@ def solve_tsp(distance_matrix):
 
     return route
 
-route = solve_tsp(distance_matrix)
-
 # -----------------------------
-# STEP 4: Plot
+# STEP 5: Plot Multi-Agent Routes
 # -----------------------------
 fig, ax = plt.subplots()
 
-# Plot points
-x = [p[0] for p in packages]
-y = [p[1] for p in packages]
+colors = ['red', 'blue', 'green', 'purple', 'orange']
 
-ax.scatter(x, y)
+for cluster_id in range(5):
+    cluster_points = points[labels == cluster_id]
 
-# Label points
-for i, (x_coord, y_coord) in enumerate(packages):
-    ax.text(x_coord, y_coord, str(i), fontsize=8)
+    # Skip if too small
+    if len(cluster_points) < 2:
+        continue
 
-# Draw route
-route_x = [packages[i][0] for i in route]
-route_y = [packages[i][1] for i in route]
+    distance_matrix = create_distance_matrix(cluster_points)
+    route = solve_tsp(distance_matrix)
 
-ax.plot(route_x, route_y)
+    route_points = cluster_points[route]
 
-# Show in Streamlit
+    # Plot points
+    ax.scatter(cluster_points[:, 0], cluster_points[:, 1],
+               color=colors[cluster_id], label=f"Van {cluster_id+1}")
+
+    # Label points
+    for i, (x_coord, y_coord) in enumerate(cluster_points):
+        ax.text(x_coord, y_coord, str(i), fontsize=7)
+
+    # Plot route
+    ax.plot(route_points[:, 0], route_points[:, 1],
+            color=colors[cluster_id])
+
+ax.legend()
 st.pyplot(fig)
