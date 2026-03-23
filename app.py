@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from ortools.constraint_solver import pywrapcp
 
-st.title("🚀 Nexus-Route: Intelligent Multi-Agent System")
+st.title("🚀 Nexus-Route: Cooperative Multi-Agent System")
 
 # -----------------------------
 # STEP 1: Generate Packages
@@ -30,19 +30,49 @@ agents = []
 for i in range(5):
     agent = {
         "id": i,
-        "battery": random.randint(20, 100),  # random battery
+        "battery": random.randint(20, 100),
         "status": "Active",
-        "packages": points[labels == i]
+        "packages": list(points[labels == i])
     }
-    
-    # If battery low → needs help
+
     if agent["battery"] < 30:
         agent["status"] = "Low Battery ⚠️"
-    
+
     agents.append(agent)
 
 # -----------------------------
-# STEP 4: Distance Matrix
+# STEP 4: Distance Function
+# -----------------------------
+def distance(p1, p2):
+    return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+# -----------------------------
+# STEP 5: REALLOCATION LOGIC 🔥
+# -----------------------------
+for agent in agents:
+    if agent["status"] == "Low Battery ⚠️":
+        for pkg in agent["packages"]:
+            best_agent = None
+            best_dist = float("inf")
+
+            for other in agents:
+                if other["status"] == "Active":
+                    # Compare with center of cluster
+                    center = np.mean(other["packages"], axis=0) if len(other["packages"]) > 0 else [0,0]
+                    d = distance(pkg, center)
+
+                    if d < best_dist:
+                        best_dist = d
+                        best_agent = other
+
+            if best_agent:
+                best_agent["packages"].append(pkg)
+
+        # Clear packages from failed agent
+        agent["packages"] = []
+
+# -----------------------------
+# STEP 6: Distance Matrix
 # -----------------------------
 def create_distance_matrix(locations):
     size = len(locations)
@@ -55,7 +85,7 @@ def create_distance_matrix(locations):
     return matrix
 
 # -----------------------------
-# STEP 5: Solve TSP
+# STEP 7: Solve TSP
 # -----------------------------
 def solve_tsp(distance_matrix):
     manager = pywrapcp.RoutingIndexManager(len(distance_matrix), 1, 0)
@@ -84,21 +114,20 @@ def solve_tsp(distance_matrix):
     return route
 
 # -----------------------------
-# STEP 6: Plot + Logic
+# STEP 8: Plot
 # -----------------------------
 fig, ax = plt.subplots()
 colors = ['red', 'blue', 'green', 'purple', 'orange']
 
 for agent in agents:
-    cluster_points = agent["packages"]
+    cluster_points = np.array(agent["packages"])
 
     if len(cluster_points) < 2:
         continue
 
-    # If battery low → simulate failure
     if agent["status"] == "Low Battery ⚠️":
         ax.scatter(cluster_points[:, 0], cluster_points[:, 1],
-                   color='black', label=f"Van {agent['id']} (Low Battery)")
+                   color='black', label=f"Van {agent['id']} (Failed)")
         continue
 
     distance_matrix = create_distance_matrix(cluster_points)
@@ -106,22 +135,20 @@ for agent in agents:
 
     route_points = cluster_points[route]
 
-    # Plot points
     ax.scatter(cluster_points[:, 0], cluster_points[:, 1],
                color=colors[agent["id"]], label=f"Van {agent['id']}")
 
-    # Plot route
     ax.plot(route_points[:, 0], route_points[:, 1],
             color=colors[agent["id"]])
 
 # -----------------------------
-# STEP 7: UI INFO PANEL
+# STEP 9: Sidebar Info
 # -----------------------------
 st.sidebar.header("🚚 Agent Status")
 
 for agent in agents:
     st.sidebar.write(
-        f"Van {agent['id']} | Battery: {agent['battery']}% | Status: {agent['status']}"
+        f"Van {agent['id']} | Battery: {agent['battery']}% | Packages: {len(agent['packages'])} | Status: {agent['status']}"
     )
 
 ax.legend()
