@@ -45,7 +45,7 @@ points = np.array(packages)
 # -----------------------------
 # STEP 2: Clustering
 # -----------------------------
-kmeans = KMeans(n_clusters=num_agents, random_state=0)
+kmeans = KMeans(n_clusters=num_agents, random_state=0, n_init=10)
 labels = kmeans.fit_predict(points)
 
 # -----------------------------
