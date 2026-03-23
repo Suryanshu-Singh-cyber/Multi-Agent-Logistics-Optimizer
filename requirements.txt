@@ -6,3 +6,4 @@ ortools
 scikit-learn
 streamlit-folium
 folium
+google-generativeai
