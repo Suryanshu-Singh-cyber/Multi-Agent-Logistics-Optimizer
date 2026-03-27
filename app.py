@@ -10,12 +10,12 @@ import time
 # Optional Gemini (safe fallback)
 USE_GEMINI = False
 try:
-    import google.generativeai as genai
+    # import google.generativeai as genai
     # genai.configure(api_key="YOUR_API_KEY")
     # model = genai.GenerativeModel("gemini-pro")
     # USE_GEMINI = True
 except:
-    USE_GEMINI = False
+    # USE_GEMINI = False
 
 st.set_page_config(layout="wide")
 st.title("🚀 Nexus-Route: Real-Time Logistics Simulation")
