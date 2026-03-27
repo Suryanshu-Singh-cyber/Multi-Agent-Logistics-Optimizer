@@ -5,62 +5,74 @@ import numpy as np
 import time
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="4D Digital Twin", layout="wide")
+st.set_page_config(page_title="Ultra 4D Digital Twin", layout="wide")
 
-# --- 1. EXPLANATORY HEADER (For others to understand) ---
-st.title("🛰️ 4D Fleet Digital Twin: Predictive Execution")
-with st.expander("📖 What am I looking at? (Project Documentation)"):
-    st.write("""
-    **This is not a static map.** This is a 4D Digital Twin of a logistics network in New Delhi.
-    - **3D (Space):** The (x, y) coordinates of the vans and the height of the arcs.
-    - **4D (Time):** The temporal element. Use the slider below to 'scrub' through time.
-    
-    **How it works:** The system predicts the position of every vehicle at a specific minute. For example, if a van leaves the warehouse at 12:00 PM, 
-    the 4D engine calculates exactly where it will be at 12:05 PM vs 12:10 PM based on its assigned route and current traffic.
-    """)
+# --- 1. SESSION STATE ---
+if 'timer' not in st.session_state:
+    st.session_state.timer = 0
+if 'run' not in st.session_state:
+    st.session_state.run = False
 
-# --- 2. TIME-OF-DAY LOGIC ---
-st.sidebar.header("🕒 Master Clock")
-# We start the "Logistics Day" at 12:00 PM
+# --- 2. ADVANCED ENVIRONMENT CONTROLS ---
+st.sidebar.header("⛈️ Environmental Constraints")
+weather_condition = st.sidebar.selectbox("Current Weather", ["Clear Skies", "Heavy Rain", "High Winds"])
+battery_mode = st.sidebar.toggle("Show Battery Health", value=True)
+
+# Logic: Weather affects speed (The 4th Dimension is elastic!)
+weather_multiplier = 1.0
+if weather_condition == "Heavy Rain":
+    weather_multiplier = 0.6  # 40% slower
+elif weather_condition == "High Winds":
+    weather_multiplier = 0.8  # 20% slower
+
+# --- 3. THE 4D CLOCK ---
+st.sidebar.header("🕒 Master Control")
+if st.sidebar.button("▶️ Start/Stop Simulation"):
+    st.session_state.run = not st.session_state.run
+
+sim_speed = st.sidebar.slider("Simulation Speed", 1, 10, 3)
 start_time = datetime.strptime("12:00", "%H:%M")
+current_clock = (start_time + timedelta(minutes=st.session_state.timer / 10)).strftime("%I:%M %p")
 
-# Time Slider (Simulating 0 to 30 minutes of travel)
-minutes_passed = st.sidebar.slider("Minutes after Noon", 0, 30, 0)
-current_clock = (start_time + timedelta(minutes=minutes_passed)).strftime("%I:%M %p")
-
-st.sidebar.metric("Simulated Time", current_clock)
-
-# --- 3. 4D DATA ENGINE ---
+# --- 4. DATA ENGINE (With Battery & Logic) ---
 warehouse = [77.23, 28.61]
 
 @st.cache_data
-def generate_predictive_trips(num_agents=6):
+def generate_advanced_trips(num_agents=6):
     trips = []
     for a in range(num_agents):
         path = [warehouse]
         timestamps = [0]
-        # Target location
         target = [77.1 + np.random.rand()*0.3, 28.4 + np.random.rand()*0.4]
         
-        # Create 30 "Minute" markers for the 4D path
-        for m in range(1, 31):
-            f = m / 30
+        for m in range(1, 101): # 100 step path
+            f = m / 100
             lng = warehouse[0] + (target[0] - warehouse[0]) * f
             lat = warehouse[1] + (target[1] - warehouse[1]) * f
             path.append([lng, lat])
-            timestamps.append(m) # Each step represents 1 minute
+            timestamps.append(m)
             
         trips.append({
-            "agent": f"Van {a+1}",
+            "agent": f"Drone-{a+101}" if a < 3 else f"Van-{a+1}",
             "path": path,
             "timestamps": timestamps,
-            "color": [0, 255, 255] if a % 2 == 0 else [255, 165, 0]
+            "color": [0, 255, 255] if a < 3 else [255, 165, 0],
+            "type": "EV-Drone" if a < 3 else "Diesel-Van"
         })
     return trips
 
-trips = generate_predictive_trips()
+trips = generate_advanced_trips()
 
-# --- 4. THE 4D TRIP LAYER ---
+# --- 5. VISUALIZATION ---
+st.title("🛰️ Ultra 4D Digital Twin: Environmental Stress-Test")
+
+# Status Bar
+c1, c2, c3 = st.columns(3)
+c1.metric("Simulated Time", current_clock)
+c2.metric("Weather Impact", f"-{int((1-weather_multiplier)*100)}% Speed")
+c3.metric("Active Fleet", len(trips))
+
+# The Map
 trip_layer = pdk.Layer(
     "TripsLayer",
     trips,
@@ -69,40 +81,44 @@ trip_layer = pdk.Layer(
     get_color="color",
     opacity=1,
     width_min_pixels=8,
-    rounded=True,
-    trail_length=5, # Short trail so we can see the exact "Point" in time
-    current_time=minutes_passed,
+    trail_length=20,
+    current_time=st.session_state.timer,
 )
-
-# --- 5. VISUALIZATION ---
-st.subheader(f"📍 Fleet Status at {current_clock}")
-
-# Add a text insight for the user
-if minutes_passed == 5:
-    st.info("Vans are currently clearing the main city intersections.")
-elif minutes_passed == 25:
-    st.success("Vans are approaching final delivery destinations.")
 
 st.pydeck_chart(pdk.Deck(
     layers=[trip_layer],
     initial_view_state=pdk.ViewState(latitude=28.61, longitude=77.23, zoom=11, pitch=45),
     map_style=None,
-    tooltip={"text": "{agent} | Position at " + current_clock}
+    tooltip={"text": "{agent} ({type})"}
 ))
 
-# --- LIVE PREDICTION TABLE ---
+# --- 6. PREDICTIVE ANALYTICS TABLE ---
 st.divider()
-st.subheader("📊 Real-Time Coordinate Prediction")
-prediction_data = []
+st.subheader("🔋 Real-Time Fleet Telemetry")
+
+telemetry = []
+current_idx = int(min(st.session_state.timer, 100))
+
 for t in trips:
-    # Find the coordinate at the current minute
-    pos = t['path'][minutes_passed]
-    prediction_data.append({
-        "Vehicle": t['agent'],
-        "Time": current_clock,
-        "Latitude": f"{pos[1]:.4f}",
-        "Longitude": f"{pos[0]:.4f}",
-        "Status": "In Transit" if minutes_passed < 30 else "Arrived"
+    # Battery drops faster in bad weather
+    battery = max(0, 100 - (current_idx * (1.2 if weather_condition != "Clear Skies" else 0.8)))
+    pos = t['path'][current_idx]
+    
+    telemetry.append({
+        "Unit": t['agent'],
+        "Type": t['type'],
+        "Battery/Fuel": f"{battery:.1f}%",
+        "Location": f"{pos[1]:.3f}, {pos[0]:.3f}",
+        "Safety Status": "⚠️ LOW ENERGY" if battery < 20 else "✅ OPTIMAL"
     })
 
-st.table(pd.DataFrame(prediction_data))
+st.table(pd.DataFrame(telemetry))
+
+# Animation Logic
+if st.session_state.run:
+    # Increment timer based on weather
+    st.session_state.timer += (sim_speed * weather_multiplier)
+    if st.session_state.timer > 100:
+        st.session_state.timer = 0
+    time.sleep(0.05)
+    st.rerun()
