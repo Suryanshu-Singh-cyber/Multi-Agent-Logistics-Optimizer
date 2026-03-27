@@ -39,7 +39,7 @@ st.set_page_config(
     page_icon="🛰️"
 )
 
-# --- CUSTOM CSS FOR MODERN UI (Professional Theme) ---
+# --- CUSTOM CSS FOR MODERN UI (Professional Dark Theme) ---
 st.markdown("""
     <style>
     .main { background-color: #0e1117; }
@@ -51,7 +51,7 @@ st.markdown("""
         border-top: 4px solid #00f2ff;
         margin-bottom: 20px;
         transition: 0.3s;
-        min-height: 200px;
+        min-height: 200px; /* Ensures all cards are same height */
     }
     .feature-card:hover { 
         transform: translateY(-8px); 
@@ -64,7 +64,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- HERO SECTION ---
-# Column 1: The Value Proposition (Text)
 col_hero1, col_hero2 = st.columns([1, 1])
 
 with col_hero1:
@@ -77,12 +76,11 @@ with col_hero1:
     st.divider()
     st.success("👈 **Explore the System:** Select '4D Simulator' or 'QA Tester' in the sidebar.")
 
-# Column 2: The Descriptive Visualization (Image)
 with col_hero2:
-    # This image visually combines all 3 pillars: Optimization (Line), Physics (Storm), and Time (Comet)
-    # The generation prompt is designed to show the project's unique value.
-    st.image("https://image.pollinations.ai/prompt/A%20futuristic%204D%20Digital%20Twin%20visualization%20for%20city%20logistics.%20A%20glowing%20cyan%20comet-trail%20moves%20across%20a%20WebGL%203D%20map%20of%20New%20Delhi,%20India.%20The%20map%20is%20dark,%20neon%20lines%20for%20roads.%20A%20storm%20system%20(heavy%20rain%20effect)%20is%20layered%20over%20part%20of%20the%20city.%20A%20glowing%20battery%20icon%20and%20CO2%20metric%20float%20above%20the%20vehicle%20trail.%20Professional%20UI%20elements,%20minimalist,%20science%20fiction%20meets%20data%20science.", 
-             caption="Real-time 4D Multi-Agent Optimization Simulation", use_container_width=True)
+    # A reliable, high-definition image representing a digital/connected city
+    # Source: Unsplash (High reliability)
+    st.image("https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop", 
+             caption="Real-time Multi-Agent Fleet Synchronization Engine", use_container_width=True)
 
 st.divider()
 
@@ -135,7 +133,6 @@ st.markdown(f"""
         <i>Specialization: Spiking Neural Networks, Robotics, & Event-Based Vision</i>
     </div>
     """, unsafe_allow_html=True)
-
 # -----------------------------
 # UI CONTROLS
 # -----------------------------
