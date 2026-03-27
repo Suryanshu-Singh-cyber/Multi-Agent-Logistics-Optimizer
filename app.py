@@ -29,16 +29,17 @@ except:
 
 # # Add a nice visual or a YouTube video link of drones/vans here
 # st.image("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800", caption="Future of Logistics")
+ #00f2ff; font-weight: bold; }
 
 import streamlit as st
 
 st.set_page_config(
-    page_title="Logistics Digital Twin", 
+    page_title="Logistics Digital Twin | 4D Fleet", 
     layout="wide", 
     page_icon="🛰️"
 )
 
-# --- CUSTOM CSS FOR MODERN UI ---
+# --- CUSTOM CSS FOR PROFESSIONAL UI ---
 st.markdown("""
     <style>
     .main { background-color: #0e1117; }
@@ -50,86 +51,92 @@ st.markdown("""
         border-top: 4px solid #00f2ff;
         margin-bottom: 20px;
         transition: 0.3s;
+        height: 250px;
     }
-    .feature-card:hover { transform: translateY(-5px); border-top: 4px solid #ff00ff; }
-    .highlight { color: #00f2ff; font-weight: bold; }
+    .feature-card:hover { 
+        transform: translateY(-10px); 
+        border-top: 4px solid #ff00ff; 
+        box-shadow: 0px 10px 20px rgba(0, 242, 255, 0.2);
+    }
+    .highlight { color: #00f2ff; font-weight: bold; font-size: 1.1em; }
+    .hero-text { font-size: 3rem; font-weight: 800; color: white; margin-bottom: 0px; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- HERO SECTION ---
-# This high-quality image sets the stage for "4D Digital Twin"
-st.image("http://googleusercontent.com/image_collection/image_retrieval/6266554220892605383_0", 
-         use_container_width=True)
+col_hero1, col_hero2 = st.columns([1.5, 1])
 
-st.title("🛰️ Multi-Agent Logistics: The 4D Digital Twin")
-st.markdown("""
-    ### **Bridging the Gap between Optimization and Reality**
-    Welcome to the next generation of fleet management. This project isn't just a map; it's a **Cyber-Physical Simulation** designed to solve the most complex challenge in modern robotics: **The Last-Mile Delivery.**
-""")
-
-st.divider()
-
-# --- THE THREE PILLARS (Visual Guide) ---
-st.header("🚀 How the Digital Twin Works")
-col1, col2, col3 = st.columns(3)
-
-with col1:
+with col_hero1:
+    st.markdown('<p class="hero-text">Predicting the Future of <span style="color:#00f2ff;">City Logistics</span></p>', unsafe_allow_html=True)
     st.markdown("""
-    <div class="feature-card">
-        <h2>📍 01. Plan</h2>
-        <p>Using <b>Google OR-Tools</b>, we solve the Vehicle Routing Problem (VRP). We calculate the shortest, most efficient paths for a fleet of multiple agents simultaneously.</p>
-        <p class="highlight">→ High Intelligence</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
-    <div class="feature-card">
-        <h2>⛈️ 02. Stress-Test</h2>
-        <p>We apply real-world constraints: <b>Heavy Rain, High Winds, and Battery Decay</b>. We test if the plan survives the chaos of New Delhi's environment.</p>
-        <p class="highlight">→ Physics-Aware</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown("""
-    <div class="feature-card">
-        <h2>🛸 03. Execute</h2>
-        <p>We visualize the result in <b>4D Space-Time</b>. Watch neon 'comet trails' move across the map, predicting every vehicle's position down to the second.</p>
-        <p class="highlight">→ Real-Time 4D</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-# --- TECH STACK SECTION ---
-st.divider()
-st.header("🧬 Engineering Core")
-t1, t2, t3, t4 = st.columns(4)
-
-with t1:
-    st.write("🐍 **Language**")
-    st.info("Python 3.10")
-with t2:
-    st.write("🧠 **Optimization**")
-    st.info("Google OR-Tools")
-with t3:
-    st.write("🛰️ **Visualization**")
-    st.info("PyDeck (WebGL)")
-with t4:
-    st.write("☁️ **Deployment**")
-    st.info("Streamlit Cloud")
-
-# --- FOOTER & CONTACT ---
-st.divider()
-st.success("👈 **Explore the Fleet: Select '4D Simulator' or 'QA Tester' from the sidebar to begin.**")
-
-# Professional Footer
-f1, f2 = st.columns([3, 1])
-with f1:
-    st.markdown("""
-        **Project for South Asian University Research Sprint** *Focus: Spiking Neural Networks, Robotics, and Event-Based Vision.*
+        ### **A 4D Multi-Agent Digital Twin**
+        This project bridges the gap between static optimization and the chaos of the real world. 
+        By simulating **Space, Time, and Environment**, we enable autonomous fleets to navigate 
+        New Delhi with unprecedented precision.
     """)
-with f2:
-    st.markdown("[LinkedIn](https://www.linkedin.com/) | [GitHub](https://github.com/)")
+    st.button("🚀 Explore the Fleet (Use Sidebar)")
+
+with col_hero2:
+    # Using a reliable Unsplash image for the "Digital Twin" look
+    st.image("https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=2000&auto=format&fit=crop", 
+             caption="Real-time Network Synchronization")
+
+st.divider()
+
+# --- THE THREE PILLARS (The "Why") ---
+st.header("🛠️ The Digital Twin Architecture")
+
+c1, c2, c3 = st.columns(3)
+
+with c1:
+    st.markdown("""
+    <div class="feature-card">
+        <h3>📍 01. The Optimizer</h3>
+        <p>Using <b>Google OR-Tools</b>, we solve the Vehicle Routing Problem (VRP) to find mathematically perfect paths for 10+ agents instantly.</p>
+        <p class="highlight">Intelligence Engine</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c2:
+    st.markdown("""
+    <div class="feature-card">
+        <h3>⛈️ 02. Environmental Stress</h3>
+        <p>We inject <b>Real-World Physics</b>: Heavy Rain, High Winds, and Battery Decay. We test if the plan survives real-world friction.</p>
+        <p class="highlight">Physics-Aware Simulation</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c3:
+    st.markdown("""
+    <div class="feature-card">
+        <h3>🛸 03. 4D Execution</h3>
+        <p>Visualize neon 'comet trails' in a WebGL environment. Predict every vehicle's position, battery, and CO2 impact in real-time.</p>
+        <p class="highlight">Temporal Visualization</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# --- SYSTEM FLOW VISUAL ---
+st.divider()
+st.subheader("🔄 Project Pipeline")
+
+st.write("Data Upload (CSV) ➔ Heuristic Optimization (OR-Tools) ➔ 4D Temporal Mapping (PyDeck) ➔ PDF Reporting (Manifest)")
+
+# --- TECH STACK ---
+st.header("🧬 Tech Stack")
+t1, t2, t3, t4 = st.columns(4)
+t1.metric("Language", "Python 3.10")
+t2.metric("Intelligence", "OR-Tools")
+t3.metric("Viz Engine", "PyDeck / WebGL")
+t4.metric("UX Framework", "Streamlit")
+
+# --- FOOTER ---
+st.divider()
+st.markdown("""
+    <div style="text-align: center; color: gray;">
+        Built by <b>Suryanshu Singh</b> for the South Asian University Research Sprint<br>
+        Focus: Robotics, Spiking Neural Networks, and Autonomous Systems
+    </div>
+    """, unsafe_allow_html=True)
 
 
 
