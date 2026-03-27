@@ -50,15 +50,16 @@ df = pd.DataFrame(data)
 
 # --- PYDECK 3D VISUALIZATION ---
 # Layer 1: The Arcs (Routes)
-arc_layer = pdk.Layer(
+# Update the ArcLayer in 3_🚚_3D_Simulator.py to look "Neon"
+layer = pdk.Layer(
     "ArcLayer",
     df,
     get_source_position="from",
     get_target_position="to",
-    get_source_color="color",
-    get_target_color=[255, 255, 255, 50],
-    get_width=3,
-    pickable=True,
+    get_source_color=[0, 255, 255, 200], # Neon Cyan
+    get_target_color=[255, 0, 255, 200], # Neon Pink
+    get_width="1 + (traffic_density / 20)", # Lines get thicker in traffic!
+    tilt=15,
 )
 
 # Layer 2: The Warehouse Glow
