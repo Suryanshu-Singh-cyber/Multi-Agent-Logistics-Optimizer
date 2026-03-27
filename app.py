@@ -237,3 +237,11 @@ else:
         folium.PolyLine(route, color=colors[agent_id]).add_to(m)
 
     st_folium(m, width=900, height=500)
+
+st.divider()
+st.subheader("🚀 Project Roadmap")
+st.checkbox("Phase 1: 2D Basic Routing", value=True)
+st.checkbox("Phase 2: 3D Pydeck Visualization", value=True)
+st.checkbox("Phase 3: Multi-Page Storytelling", value=True)
+st.checkbox("Phase 4: Real-time Traffic API Integration", value=False)
+st.checkbox("Phase 5: Drone-Specific Physics (Battery/Wind)", value=False)
