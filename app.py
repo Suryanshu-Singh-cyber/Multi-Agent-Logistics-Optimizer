@@ -31,7 +31,7 @@ run_simulation = st.sidebar.button("▶️ Start Simulation")
 reset = st.sidebar.button("🔄 Reset")
 
 if reset:
-    st.experimental_rerun()
+    st.rerun()
 
 # -----------------------------
 # STEP 1: Generate Real Locations
