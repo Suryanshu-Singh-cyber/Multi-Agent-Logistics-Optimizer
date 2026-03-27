@@ -75,10 +75,13 @@ if uploaded_file is not None:
     else:
         st.error("Error: CSV must contain 'latitude' and 'longitude' columns.")
 
-# Add an "Edge Case" detector in 4_🧪_QA_Tester.py
-max_dist = 50.0 # km
-outliers = user_data[user_data['distance_from_hub'] > max_dist]
+# --- Replace the broken line near Line 80 with this ---
+max_dist = 50.0  # km
 
-if not outliers.empty:
-    st.warning(f"⚠️ Found {len(outliers)} unreachable points beyond {max_dist}km radius!")
-    st.dataframe(outliers)
+# Calculate distance for every point from the warehouse [28.61, 77.23]
+user_data['distance_from_hub'] = np.sqrt(
+    (user_data['latitude'] - 28.61)**2 + (user_data['longitude'] - 77.23)**2
+) * 111  # Rough conversion from degrees to km
+
+# Now filter the outliers
+outliers = user_data[user_data['distance_from_hub'] > max_dist]
