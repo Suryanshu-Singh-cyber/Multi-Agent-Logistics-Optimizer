@@ -39,7 +39,7 @@ st.set_page_config(
     page_icon="🛰️"
 )
 
-# --- CUSTOM CSS FOR PROFESSIONAL UI ---
+# --- CUSTOM CSS FOR MODERN UI (Professional Theme) ---
 st.markdown("""
     <style>
     .main { background-color: #0e1117; }
@@ -51,39 +51,43 @@ st.markdown("""
         border-top: 4px solid #00f2ff;
         margin-bottom: 20px;
         transition: 0.3s;
-        min-height: 220px;
+        min-height: 200px;
     }
     .feature-card:hover { 
-        transform: translateY(-10px); 
+        transform: translateY(-8px); 
         border-top: 4px solid #ff00ff; 
-        box-shadow: 0px 10px 20px rgba(0, 242, 255, 0.2);
+        box-shadow: 0px 10px 30px rgba(0, 242, 255, 0.2);
     }
-    .hero-text { font-size: 3rem; font-weight: 800; color: white; margin-bottom: 10px; line-height: 1.1; }
+    .hero-text { font-size: 3.5rem; font-weight: 800; color: white; margin-bottom: 5px; line-height: 1.1; }
     .highlight { color: #00f2ff; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- HERO SECTION ---
-col_hero1, col_hero2 = st.columns([1.2, 1])
+# Column 1: The Value Proposition (Text)
+col_hero1, col_hero2 = st.columns([1, 1])
 
 with col_hero1:
-    st.markdown('<p class="hero-text">Predicting the Future of <span style="color:#00f2ff;">Autonomous Logistics</span></p>', unsafe_allow_html=True)
+    st.markdown('<p class="hero-text">The 4D Fleet <span style="color:#00f2ff;">Digital Twin</span></p>', unsafe_allow_html=True)
     st.markdown("""
-        ### **A 4D Multi-Agent Digital Twin**
-        This system transforms static route data into a living, breathing **Cyber-Physical Simulation**. 
-        By modeling **Space, Time, and Environment**, we solve the 'Last-Mile' puzzle for the modern world.
+        ### **Bridging Mathematical Optimization and Real-World Chaos.**
+        This dashboard isn't a map; it's a **Cyber-Physical Simulation**. It transforms static route plans into a dynamic, 
+        physics-aware environment, solving the complex 'Last-Mile' puzzle for autonomous networks in New Delhi.
     """)
-    st.info("👈 **Get Started:** Select **4D Simulator** in the sidebar to watch the fleet in action.")
+    st.divider()
+    st.success("👈 **Explore the System:** Select '4D Simulator' or 'QA Tester' in the sidebar.")
 
+# Column 2: The Descriptive Visualization (Image)
 with col_hero2:
-    # Reliable high-speed delivery/network image from Unsplash Source
-    st.image("https://images.unsplash.com/photo-1580674684081-7617fbf3d745?q=80&w=1000&auto=format&fit=crop", 
-             caption="Real-Time Fleet Execution Engine", use_container_width=True)
+    # This image visually combines all 3 pillars: Optimization (Line), Physics (Storm), and Time (Comet)
+    # The generation prompt is designed to show the project's unique value.
+    st.image("https://image.pollinations.ai/prompt/A%20futuristic%204D%20Digital%20Twin%20visualization%20for%20city%20logistics.%20A%20glowing%20cyan%20comet-trail%20moves%20across%20a%20WebGL%203D%20map%20of%20New%20Delhi,%20India.%20The%20map%20is%20dark,%20neon%20lines%20for%20roads.%20A%20storm%20system%20(heavy%20rain%20effect)%20is%20layered%20over%20part%20of%20the%20city.%20A%20glowing%20battery%20icon%20and%20CO2%20metric%20float%20above%20the%20vehicle%20trail.%20Professional%20UI%20elements,%20minimalist,%20science%20fiction%20meets%20data%20science.", 
+             caption="Real-time 4D Multi-Agent Optimization Simulation", use_container_width=True)
 
 st.divider()
 
-# --- THE THREE PILLARS ---
-st.header("🛠️ Core System Architecture")
+# --- THE THREE PILLARS (The "How It Works") ---
+st.header("🚀 System Intelligence & Digital Twin Architecture")
 
 c1, c2, c3 = st.columns(3)
 
@@ -109,28 +113,29 @@ with c3:
     st.markdown("""
     <div class="feature-card">
         <h3>🛸 03. Digital Twin Execution</h3>
-        <p>High-fidelity <b>4D Visualization</b> with PyDeck. Watch 'comet-trail' telemetry predict fleet positions with sub-second accuracy.</p>
+        <p>High-fidelity <b>4D Visualization</b> with PyDeck GL. Watch 'comet-trail' telemetry predict fleet positions with sub-second accuracy.</p>
         <p class="highlight">WebGL Visualization</p>
     </div>
     """, unsafe_allow_html=True)
 
 # --- TECH STACK ---
 st.divider()
-st.header("🧬 Tech Stack")
+st.header("🧬 Engineering Core")
 t1, t2, t3, t4 = st.columns(4)
 t1.metric("Logic", "Python 3.10")
 t2.metric("Intelligence", "OR-Tools")
 t3.metric("Visualization", "PyDeck GL")
-t4.metric("Interface", "Streamlit")
+t4.metric("UX Framework", "Streamlit")
 
 # --- FOOTER ---
 st.divider()
 st.markdown(f"""
     <div style="text-align: center; color: gray; padding: 20px;">
-        Developed by <b>Suryanshu Singh</b> | South Asian University Research Sprint 2026<br>
-        <i>Specialization: Spiking Neural Networks & Autonomous Systems</i>
+        Developed by <b>Suryanshu Singh</b> | South Asian University Research Sprint<br>
+        <i>Specialization: Spiking Neural Networks, Robotics, & Event-Based Vision</i>
     </div>
     """, unsafe_allow_html=True)
+
 # -----------------------------
 # UI CONTROLS
 # -----------------------------
