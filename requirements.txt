@@ -1,9 +1,11 @@
-gymnasium
-numpy
-stable-baselines3
 streamlit
-ortools
 scikit-learn
-streamlit-folium
+numpy<2.0.0
+ortools==9.8.3296
 folium
+streamlit-folium
 google-generativeai
+protobuf==4.25.3
+gymnasium
+stable-baselines3
+
