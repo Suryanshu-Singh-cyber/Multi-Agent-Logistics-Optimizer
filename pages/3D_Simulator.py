@@ -6,101 +6,93 @@ import time
 
 st.set_page_config(page_title="3D Logistics Command", layout="wide")
 
-# --- SIDEBAR CONTROLS ---
-st.sidebar.header("🚦 Environment Settings")
-traffic_density = st.sidebar.slider("Traffic Density (Congestion)", 0, 100, 30)
-num_agents = st.sidebar.select_slider("Active Agents", options=[1, 3, 5, 8], value=3)
+# --- 1. ANIMATION STATE ---
+if 'timer' not in st.session_state:
+    st.session_state.timer = 0
+if 'run' not in st.session_state:
+    st.session_state.run = False
 
-# Logic: Higher traffic = Redder colors
-def get_traffic_color(density):
-    # RGB: Low = Cyan [0, 255, 200], High = Red [255, 50, 50]
-    r = int((density / 100) * 255)
-    g = int(255 - (density / 100) * 200)
-    b = int(200 - (density / 100) * 150)
-    return [r, g, b, 200]
+# --- 2. SIDEBAR CONTROLS ---
+st.sidebar.header("🕹️ Animation Control")
+if st.sidebar.button("▶️ Start/Stop Simulation"):
+    st.session_state.run = not st.session_state.run
 
-current_color = get_traffic_color(traffic_density)
+speed = st.sidebar.slider("Simulation Speed", 1, 10, 5)
+traffic_density = st.sidebar.slider("Traffic Congestion", 0, 100, 30)
 
-# --- MAIN UI ---
-st.title("🚚 3D Logistics Command Center")
-
-if traffic_density > 70:
-    st.warning(f"High Traffic Alert: Efficiency reduced by {traffic_density - 50}%")
-else:
-    st.success("Traffic Flow: Optimal")
-
-# --- DATA GENERATION ---
-warehouse = [77.23, 28.61] 
+# --- 3. DATA GENERATION (Path-based for TripLayer) ---
+warehouse = [77.23, 28.61]
 
 @st.cache_data
-def get_static_targets(n=50):
-    return [[77.1 + np.random.rand()*0.25, 28.5 + np.random.rand()*0.25] for _ in range(n)]
+def generate_trip_data(num_agents=5):
+    trips = []
+    for a in range(num_agents):
+        # Create a path of 10 points for each agent
+        path = [warehouse]
+        target = [77.1 + np.random.rand()*0.25, 28.5 + np.random.rand()*0.25]
+        
+        # Simple linear interpolation for the "trip"
+        for step in range(1, 11):
+            fraction = step / 10
+            lng = warehouse[0] + (target[0] - warehouse[0]) * fraction
+            lat = warehouse[1] + (target[1] - warehouse[1]) * fraction
+            path.append([lng, lat, step * 100]) # [lng, lat, timestamp]
+            
+        trips.append({
+            "vendor": f"Agent {a+1}",
+            "path": path,
+            "color": [0, 255, 255] if a % 2 == 0 else [255, 0, 150]
+        })
+    return trips
 
-targets = get_static_targets(num_agents * 10)
-data = []
-for i, t in enumerate(targets):
-    data.append({
-        "from": warehouse,
-        "to": t,
-        "agent": f"Agent {i % num_agents + 1}",
-        "color": current_color
-    })
+trips = generate_trip_data()
 
-df = pd.DataFrame(data)
-
-# --- PYDECK CONFIGURATION ---
-
-# 1. Define View State FIRST so it exists for the map
-view_state = pdk.ViewState(
-    longitude=77.23, 
-    latitude=28.61, 
-    zoom=10, 
-    pitch=45, 
-    bearing=0
+# --- 4. THE TRIP LAYER ---
+# This layer renders the "moving" trails based on the timestamp
+trip_layer = pdk.Layer(
+    "TripsLayer",
+    trips,
+    get_path="path",
+    get_timestamps="path.map(p => p[2])",
+    get_color="color",
+    opacity=0.8,
+    width_min_pixels=5,
+    rounded=True,
+    trail_length=150, # How long the "tail" is
+    current_time=st.session_state.timer,
 )
 
-# 2. Build the Warehouse Glow Layer
-warehouse_layer = pdk.Layer(
-    "ScatterplotLayer",
-    pd.DataFrame([{"pos": warehouse}]),
-    get_position="pos",
-    get_color=[255, 255, 255, 255],
-    get_radius=600,
-)
+view_state = pdk.ViewState(latitude=28.61, longitude=77.23, zoom=10, pitch=45)
 
-# 3. Build the Neon Arc Layer
-arc_layer = pdk.Layer(
-    "ArcLayer",
-    df,
-    get_source_position="from",
-    get_target_position="to",
-    get_source_color="color",
-    get_target_color=[255, 255, 255, 80],
-    get_width="2 + (traffic_density / 20)", # Arcs get thicker as traffic increases
-    pickable=True,
-    auto_highlight=True,
-)
+# --- 5. RENDER & ANIMATION LOOP ---
+st.title("🚚 4D Fleet Digital Twin")
 
-# 4. Draw a SINGLE consolidated Map
-st.pydeck_chart(pdk.Deck(
-    layers=[warehouse_layer, arc_layer],
-    initial_view_state=view_state,
-    map_style=None, # Set to "mapbox://styles/mapbox/dark-v10" if you have a token
-    tooltip={
-        "html": "<b>Agent:</b> {agent}<br/><b>Status:</b> Moving through traffic",
-        "style": {"color": "white"}
-    }
-))
+map_placeholder = st.empty()
 
-# --- LIVE METRICS ---
+# The Animation Loop
+if st.session_state.run:
+    # Increment timer
+    st.session_state.timer += (speed * 2)
+    if st.session_state.timer > 1200: # Reset loop
+        st.session_state.timer = 0
+    
+    # Redraw map
+    with map_placeholder:
+        st.pydeck_chart(pdk.Deck(
+            layers=[trip_layer],
+            initial_view_state=view_state,
+            map_style=None,
+        ))
+    time.sleep(0.05)
+    st.rerun() # This triggers the next frame
+else:
+    with map_placeholder:
+        st.pydeck_chart(pdk.Deck(
+            layers=[trip_layer],
+            initial_view_state=view_state,
+            map_style=None,
+        ))
+
+# --- METRICS ---
 st.divider()
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric("Total Deliveries", len(targets))
-with col2:
-    avg_speed = max(10, 60 - (traffic_density * 0.5))
-    st.metric("Avg. Speed", f"{avg_speed:.1f} km/h", f"-{traffic_density/2}%" if traffic_density > 20 else None)
-with col3:
-    fuel_multiplier = 1.0 + (traffic_density * 0.01)
-    st.metric("Fuel Consumption", f"{fuel_multiplier:.2f}x", delta_color="inverse")
+st.info(f"Current Simulation Time: {st.session_state.timer} | Status: {'Running' if st.session_state.run else 'Paused'}")
