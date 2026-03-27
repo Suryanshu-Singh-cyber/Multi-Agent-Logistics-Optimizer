@@ -18,7 +18,17 @@ except:
     USE_GEMINI = False
 
 st.set_page_config(layout="wide")
-st.title("🚀 Nexus-Route: Real-Time Logistics Simulation")
+# st.title("🚀 Nexus-Route: Real-Time Logistics Simulation")
+st.title("📦 Project: Multi-Agent Logistics Optimizer")
+
+with st.chat_message("assistant"):
+    st.write("Hello! I am the Logistics AI. Shipping 10,000 packages across Delhi is a nightmare. Doing it randomly wastes fuel and time.")
+    st.write("In this project, I use **OR-Tools** and **Multi-Agent Systems** to find the perfect path.")
+
+st.info("👈 Use the sidebar to explore the math or launch the 3D Simulator!")
+
+# Add a nice visual or a YouTube video link of drones/vans here
+st.image("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800", caption="Future of Logistics")
 
 # -----------------------------
 # UI CONTROLS
