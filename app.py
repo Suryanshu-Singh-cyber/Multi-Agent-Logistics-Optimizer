@@ -39,7 +39,7 @@ st.set_page_config(
     page_icon="🛰️"
 )
 
-# --- CUSTOM CSS FOR MODERN UI (Professional Dark Theme) ---
+# --- CUSTOM CSS FOR MODERN UI ---
 st.markdown("""
     <style>
     .main { background-color: #0e1117; }
@@ -51,12 +51,19 @@ st.markdown("""
         border-top: 4px solid #00f2ff;
         margin-bottom: 20px;
         transition: 0.3s;
-        min-height: 200px; /* Ensures all cards are same height */
+        min-height: 200px;
     }
     .feature-card:hover { 
         transform: translateY(-8px); 
         border-top: 4px solid #ff00ff; 
         box-shadow: 0px 10px 30px rgba(0, 242, 255, 0.2);
+    }
+    .pipeline-step {
+        background-color: #1e2130;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #3e4255;
     }
     .hero-text { font-size: 3.5rem; font-weight: 800; color: white; margin-bottom: 5px; line-height: 1.1; }
     .highlight { color: #00f2ff; font-weight: bold; }
@@ -77,14 +84,29 @@ with col_hero1:
     st.success("👈 **Explore the System:** Select '4D Simulator' or 'QA Tester' in the sidebar.")
 
 with col_hero2:
-    # A reliable, high-definition image representing a digital/connected city
-    # Source: Unsplash (High reliability)
     st.image("https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop", 
              caption="Real-time Multi-Agent Fleet Synchronization Engine", use_container_width=True)
 
 st.divider()
 
-# --- THE THREE PILLARS (The "How It Works") ---
+# --- NEW: PROJECT PIPELINE SECTION ---
+st.header("🛠️ Project Pipeline & Data Workflow")
+p1, p2, p3, p4, p5 = st.columns(5)
+
+with p1:
+    st.markdown("""<div class="pipeline-step"><h3>📥</h3><b>Data Ingestion</b><br><small>Raw CSV/Excel Upload</small></div>""", unsafe_allow_html=True)
+with p2:
+    st.markdown("""<div class="pipeline-step"><h3>⚙️</h3><b>Optimization</b><br><small>OR-Tools Heuristics</small></div>""", unsafe_allow_html=True)
+with p3:
+    st.markdown("""<div class="pipeline-step"><h3>⛈️</h3><b>Physics Injector</b><br><small>Environment Stress-Test</small></div>""", unsafe_allow_html=True)
+with p4:
+    st.markdown("""<div class="pipeline-step"><h3>🛰️</h3><b>4D Mapping</b><br><small>Temporal Visualization</small></div>""", unsafe_allow_html=True)
+with p5:
+    st.markdown("""<div class="pipeline-step"><h3>📄</h3><b>Reporting</b><br><small>Automated PDF Manifest</small></div>""", unsafe_allow_html=True)
+
+st.divider()
+
+# --- THE THREE PILLARS ---
 st.header("🚀 System Intelligence & Digital Twin Architecture")
 
 c1, c2, c3 = st.columns(3)
@@ -133,6 +155,7 @@ st.markdown(f"""
         <i>Specialization: Spiking Neural Networks, Robotics, & Event-Based Vision</i>
     </div>
     """, unsafe_allow_html=True)
+
 # -----------------------------
 # UI CONTROLS
 # -----------------------------
