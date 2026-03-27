@@ -12,9 +12,10 @@ if 'timer' not in st.session_state:
     st.session_state.timer = 0
 if 'run' not in st.session_state:
     st.session_state.run = False
+if 'total_km' not in st.session_state:
+    st.session_state.total_km = 0.0
 
-# --- 2. EXPLANATORY HEADER (For UX) ---
-# --- 1. ENHANCED EXPLANATORY HEADER ---
+# --- 2. ENHANCED EXPLANATORY HEADER ---
 st.title("🛰️ Ultra 4D Digital Twin: Predictive Fleet Execution")
 
 with st.expander("📖 System Intelligence & Digital Twin Documentation", expanded=True):
@@ -41,12 +42,11 @@ st.sidebar.header("⛈️ Environmental Constraints")
 weather_condition = st.sidebar.selectbox("Current Weather", ["Clear Skies", "Heavy Rain", "High Winds"])
 battery_mode = st.sidebar.toggle("Show Battery Health", value=True)
 
-# Logic: Weather affects speed (The 4th Dimension is elastic!)
 weather_multiplier = 1.0
 battery_drain_rate = 0.8
 if weather_condition == "Heavy Rain":
     weather_multiplier = 0.6  
-    battery_drain_rate = 1.5 # Battery dies faster in rain
+    battery_drain_rate = 1.5
 elif weather_condition == "High Winds":
     weather_multiplier = 0.8  
     battery_drain_rate = 1.2
@@ -56,13 +56,17 @@ st.sidebar.header("🕒 Master Control")
 if st.sidebar.button("▶️ Start/Stop Simulation"):
     st.session_state.run = not st.session_state.run
 
+if st.sidebar.button("🔄 Reset Fleet Data"):
+    st.session_state.timer = 0
+    st.session_state.total_km = 0.0
+
 sim_speed = st.sidebar.slider("Simulation Speed", 1, 10, 3)
 start_time = datetime.strptime("12:00", "%H:%M")
 current_clock = (start_time + timedelta(minutes=st.session_state.timer / 10)).strftime("%I:%M %p")
 
-# --- 5. DATA ENGINE (With Autonomous Logic) ---
+# --- 5. DATA ENGINE ---
 warehouse = [77.23, 28.61]
-recharge_station = [77.15, 28.55] # Static recharge hub
+recharge_station = [77.15, 28.55]
 
 @st.cache_data
 def generate_advanced_trips(num_agents=6):
@@ -71,6 +75,9 @@ def generate_advanced_trips(num_agents=6):
         path = [warehouse]
         timestamps = [0]
         target = [77.1 + np.random.rand()*0.3, 28.4 + np.random.rand()*0.4]
+        
+        # Pre-calculate the total route distance for this agent
+        total_route_dist = np.sqrt((target[0]-warehouse[0])**2 + (target[1]-warehouse[1])**2) * 111
         
         for m in range(1, 101): 
             f = m / 100
@@ -84,24 +91,22 @@ def generate_advanced_trips(num_agents=6):
             "path": path,
             "timestamps": timestamps,
             "color": [0, 255, 255] if a < 3 else [255, 165, 0],
-            "type": "EV-Drone" if a < 3 else "Diesel-Van"
+            "type": "EV-Drone" if a < 3 else "Diesel-Van",
+            "max_dist": total_route_dist
         })
     return trips
 
 trips = generate_advanced_trips()
 
 # --- 6. VISUALIZATION LAYERS ---
-# Layer 1: The Recharge Hub
 recharge_layer = pdk.Layer(
     "ScatterplotLayer",
     pd.DataFrame([{"pos": recharge_station}]),
     get_position="pos",
     get_color=[255, 0, 0, 200],
     get_radius=800,
-    pickable=True,
 )
 
-# Layer 2: The Moving Fleet
 trip_layer = pdk.Layer(
     "TripsLayer",
     trips,
@@ -114,20 +119,20 @@ trip_layer = pdk.Layer(
     current_time=st.session_state.timer,
 )
 
-# Render Status Metrics
+# --- 7. REAL-TIME DASHBOARD METRICS ---
 m1, m2, m3 = st.columns(3)
 m1.metric("Simulated Time", current_clock)
-m2.metric("Efficiency", f"{int(weather_multiplier*100)}%", delta=f"{int((weather_multiplier-1)*100)}%")
-m3.metric("Fleet Status", "In Transit")
+m2.metric("Fleet Efficiency", f"{int(weather_multiplier*100)}%", delta=f"{int((weather_multiplier-1)*100)}%")
+m3.metric("Total Distance", f"{st.session_state.total_km:.1f} km")
 
 st.pydeck_chart(pdk.Deck(
     layers=[recharge_layer, trip_layer],
     initial_view_state=pdk.ViewState(latitude=28.61, longitude=77.23, zoom=11, pitch=45),
     map_style=None,
-    tooltip={"text": "{agent} ({type})\nStatus: Tracking..."}
+    tooltip={"text": "{agent} ({type})"}
 ))
 
-# --- 7. REAL-TIME TELEMETRY & ALERT SYSTEM ---
+# --- 8. REAL-TIME TELEMETRY TABLE ---
 st.divider()
 st.subheader("🔋 Real-Time Fleet Telemetry")
 
@@ -135,33 +140,45 @@ telemetry = []
 current_idx = int(min(st.session_state.timer, 100))
 
 for t in trips:
-    # Battery logic: Drain rate is multiplied by weather severity
     battery = max(0, 100 - (current_idx * battery_drain_rate))
     pos = t['path'][current_idx]
     
-    # Autonomous Alert Logic
+    # Calculate distance for this agent based on time progression
+    agent_dist = (current_idx / 100) * t['max_dist']
+    
     status = "✅ OPTIMAL"
-    color_ui = "normal"
-    if battery < 20:
-        status = "🚨 EMERGENCY: RECHARGE REQ"
-        color_ui = "inverse"
-    elif battery < 50:
-        status = "⚠️ CAUTION: LOW POWER"
+    if battery < 20: status = "🚨 EMERGENCY: RECHARGE REQ"
+    elif battery < 50: status = "⚠️ CAUTION: LOW POWER"
 
     telemetry.append({
         "Unit": t['agent'],
         "Type": t['type'],
         "Battery/Fuel": f"{battery:.1f}%",
-        "Position": f"{pos[1]:.3f}, {pos[0]:.3f}",
+        "Distance Covered": f"{agent_dist:.2f} km",
         "Safety Status": status
     })
 
 st.table(pd.DataFrame(telemetry))
 
-# --- 8. ANIMATION ENGINE ---
+# --- 9. SUMMARY INSIGHTS ---
+st.divider()
+foot_col1, foot_col2 = st.columns(2)
+
+# Estimate CO2 (approx 120g per km for diesel vans, 0 for drones)
+total_co2 = sum([(current_idx / 100) * t['max_dist'] * 0.12 for t in trips if "Van" in t['agent']])
+
+foot_col1.info(f"💡 **Sustainability Note:** Fleet CO2 Impact: **{total_co2:.2f} kg**")
+foot_col2.success(f"📊 **Data Summary:** The total fleet has traveled **{st.session_state.total_km:.2f} kilometers** in this simulation cycle.")
+
+# --- 10. ANIMATION ENGINE ---
 if st.session_state.run:
+    # Update global distance in session state
+    st.session_state.total_km = sum([(min(st.session_state.timer, 100) / 100) * t['max_dist'] for t in trips])
+    
     st.session_state.timer += (sim_speed * weather_multiplier)
     if st.session_state.timer > 100:
-        st.session_state.timer = 0
+        st.session_state.timer = 100
+        st.session_state.run = False
+    
     time.sleep(0.05)
     st.rerun()
