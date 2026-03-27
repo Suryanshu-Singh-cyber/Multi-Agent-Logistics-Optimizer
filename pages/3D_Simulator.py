@@ -20,47 +20,50 @@ if st.sidebar.button("▶️ Start/Stop Simulation"):
 speed = st.sidebar.slider("Simulation Speed", 1, 10, 5)
 traffic_density = st.sidebar.slider("Traffic Congestion", 0, 100, 30)
 
-# --- 3. DATA GENERATION (Path-based for TripLayer) ---
+# --- 3. DATA GENERATION (Fixed for TripLayer) ---
 warehouse = [77.23, 28.61]
 
 @st.cache_data
 def generate_trip_data(num_agents=5):
     trips = []
     for a in range(num_agents):
-        # Create a path of 10 points for each agent
         path = [warehouse]
+        # Generate timestamps as a separate list for the layer to read easily
+        timestamps = [0] 
+        
         target = [77.1 + np.random.rand()*0.25, 28.5 + np.random.rand()*0.25]
         
-        # Simple linear interpolation for the "trip"
         for step in range(1, 11):
             fraction = step / 10
             lng = warehouse[0] + (target[0] - warehouse[0]) * fraction
             lat = warehouse[1] + (target[1] - warehouse[1]) * fraction
-            path.append([lng, lat, step * 100]) # [lng, lat, timestamp]
+            path.append([lng, lat])
+            timestamps.append(step * 100) # Simple 0-1000ms timeline
             
         trips.append({
             "vendor": f"Agent {a+1}",
             "path": path,
+            "timestamps": timestamps,
             "color": [0, 255, 255] if a % 2 == 0 else [255, 0, 150]
         })
     return trips
 
 trips = generate_trip_data()
 
-# --- 4. THE TRIP LAYER ---
-# This layer renders the "moving" trails based on the timestamp
+# --- 4. THE TRIP LAYER (Corrected Syntax) ---
 trip_layer = pdk.Layer(
     "TripsLayer",
     trips,
     get_path="path",
-    get_timestamps="path.map(p => p[2])",
+    get_timestamps="timestamps", # We now point directly to the list we made
     get_color="color",
     opacity=0.8,
     width_min_pixels=5,
     rounded=True,
-    trail_length=150, # How long the "tail" is
+    trail_length=150,
     current_time=st.session_state.timer,
 )
+
 
 view_state = pdk.ViewState(latitude=28.61, longitude=77.23, zoom=10, pitch=45)
 
