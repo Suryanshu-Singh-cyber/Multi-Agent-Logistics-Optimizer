@@ -14,16 +14,26 @@ if 'run' not in st.session_state:
     st.session_state.run = False
 
 # --- 2. EXPLANATORY HEADER (For UX) ---
-st.title("🛰️ Ultra 4D Digital Twin: Environmental Stress-Test")
-with st.expander("📖 System Architecture & Logic"):
-    st.write("""
-    ### **What is a 4D Digital Twin?**
-    This page simulates a **Cyber-Physical System**. Unlike a standard map, this model accounts for **Time (4D)** and **Environmental Physics**.
+# --- 1. ENHANCED EXPLANATORY HEADER ---
+st.title("🛰️ Ultra 4D Digital Twin: Predictive Fleet Execution")
+
+with st.expander("📖 System Intelligence & Digital Twin Documentation", expanded=True):
+    st.markdown("""
+    ### **The Science of 4D Logistics**
+    This dashboard represents a **Cyber-Physical System (CPS)**. It creates a virtual 'mirror' of a real-world delivery fleet in New Delhi, operating across four critical dimensions.
     
-    **Key Features Explained:**
-    * **Elastic Time:** When you select 'Heavy Rain', the simulation time slows down. This mimics real-world drag and reduced velocity for drones and vans.
-    * **Autonomous Rerouting:** Drones are programmed with a 'Safety Threshold'. If battery drops below 20%, they are visually flagged for immediate landing/recharge.
-    * **Predictive Telemetry:** The table below predicts the exact coordinate and battery health of every unit at any given second.
+    ---
+    #### **🛸 The Four Dimensions**
+    1. **Spatial (3D):** We map the high-resolution $(x, y)$ coordinates of every vehicle and calculate the optimal arc height for route visualization.
+    2. **Temporal (4D):** Time is treated as a dynamic variable. We don't just show *where* a van is; we predict *when* it will arrive at any point in the future.
+    
+    #### **🧠 How the Engine Works**
+    * **Predictive Telemetry:** The engine uses a linear interpolation algorithm to estimate vehicle position. If a Van leaves at **12:00 PM**, the 4D engine calculates its exact location at **12:05 PM** vs **12:10 PM** by accounting for distance and environmental drag.
+    * **Elastic Time Logic:** By adjusting the **Weather Settings**, you are changing the 'Physics' of the simulation. **Heavy Rain** increases friction and reduces velocity, causing the 4D paths to 'stretch'—meaning the same trip takes more time.
+    * **Autonomous Safety:** The system monitors **Battery SoC (State of Charge)** in real-time. If the 4D projection shows a drone hitting <20% battery before its next stop, the system triggers an emergency alert.
+    
+    ---
+    **💡 Tip:** Toggle the **'Play'** button to watch the 'Temporal Execution' or use the **'Simulation Speed'** slider to fast-forward through the day's operations.
     """)
 
 # --- 3. ADVANCED ENVIRONMENT CONTROLS ---
