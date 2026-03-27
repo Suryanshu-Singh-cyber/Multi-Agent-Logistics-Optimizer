@@ -36,8 +36,17 @@ if reset:
 # -----------------------------
 # STEP 1: Generate Real Locations
 # -----------------------------
+# -----------------------------
+# STEP 1: Generate Real Locations (CACHED)
+# -----------------------------
+@st.cache_data
 def generate_packages(n):
     return [(28.5 + random.random()*0.2, 77.1 + random.random()*0.2) for _ in range(n)]
+
+# If the user clicks reset, clear the memory!
+if reset:
+    generate_packages.clear()
+    st.rerun()
 
 packages = generate_packages(num_packages)
 points = np.array(packages)
@@ -169,13 +178,18 @@ for a in agents:
 # -----------------------------
 # STEP 11: MAP SIMULATION
 # -----------------------------
+# -----------------------------
+# STEP 11: MAP SIMULATION
+# -----------------------------
 colors = ["red","blue","green","purple","orange","black","pink","cyan"]
 
 if run_simulation:
+    map_placeholder = st.empty() # Creates a single fixed box for the animation
+    
     for step in range(20):
         m = folium.Map(location=[28.6, 77.2], zoom_start=11)
 
-        # packages
+        # Draw packages
         for p in packages:
             folium.CircleMarker(location=p, radius=3, color="gray").add_to(m)
 
@@ -183,19 +197,22 @@ if run_simulation:
             if len(route) < 2:
                 continue
 
-            # draw route
+            # Draw route line
             folium.PolyLine(route, color=colors[agent_id]).add_to(m)
 
-            # moving van
+            # Draw moving van
             pos = route[min(step, len(route)-1)]
-
             folium.Marker(
                 location=pos,
                 icon=folium.Icon(color=colors[agent_id], icon="car")
             ).add_to(m)
 
-        st_folium(m, width=900, height=500)
+        # Draw to the placeholder, and stop it from triggering re-runs!
+        with map_placeholder:
+            st_folium(m, width=900, height=500, returned_objects=[], key=f"anim_{step}")
+        
         time.sleep(0.3)
+
 
 else:
     # static preview
