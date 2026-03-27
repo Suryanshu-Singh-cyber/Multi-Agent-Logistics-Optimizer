@@ -53,6 +53,20 @@ with col2:
         layers=[pdk.Layer("ArcLayer", opt_data, get_source_position="from", get_target_position="to", 
                           get_source_color=[0, 255, 150, 150], get_target_color=[200, 255, 200, 80], get_width=2)]
     ))
+    # Add this logic to 1_📊_The_Problem.py
+st.sidebar.subheader("Fleet Parameters")
+fuel_price = st.sidebar.number_input("Fuel Price (per liter)", 90, 110, 96)
+avg_mileage = st.sidebar.slider("Vehicle Mileage (km/l)", 5, 20, 12)
+
+# Calculate real-world savings
+dist_saved = 45.2 # Simulated value
+money_saved = (dist_saved / avg_mileage) * fuel_price
+co2_saved = dist_saved * 0.12 # 120g per km
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Fuel Savings", f"₹{money_saved:,.0f}", "+15%")
+col2.metric("CO2 Reduced", f"{co2_saved:.1f} kg", "-22%")
+col3.metric("Fleet Utilization", "98%", "+12%")
 
 # --- 3. THE "WHY" METRICS ---
 st.divider()
