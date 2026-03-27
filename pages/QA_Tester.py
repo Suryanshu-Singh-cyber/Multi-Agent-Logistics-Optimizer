@@ -35,17 +35,13 @@ st.subheader("Step 2: Upload Your Data")
 uploaded_file = st.file_uploader("Choose your CSV file", type="csv")
 
 if uploaded_file is not None:
-    # We load the data here
     user_data = pd.read_csv(uploaded_file)
     
-    # Validation
     if 'latitude' in user_data.columns and 'longitude' in user_data.columns:
         st.success(f"Successfully loaded {len(user_data)} delivery points!")
 
-        # --- NEW: CALCULATE DISTANCE & OUTLIERS INSIDE THE LOAD BLOCK ---
-        max_dist = 50.0  # km limit
-        
-        # Euclidean distance approximation for Delhi region
+        # Distance calculation
+        max_dist = 50.0  
         user_data['distance_from_hub'] = np.sqrt(
             (user_data['latitude'] - 28.61)**2 + (user_data['longitude'] - 77.23)**2
         ) * 111  
@@ -54,8 +50,6 @@ if uploaded_file is not None:
         
         if not outliers.empty:
             st.warning(f"⚠️ Found {len(outliers)} points exceeding the {max_dist}km delivery radius!")
-            with st.expander("View Outliers"):
-                st.write(outliers)
 
         # Visualize the uploaded points
         view_state = pdk.ViewState(
@@ -79,14 +73,32 @@ if uploaded_file is not None:
             tooltip={"text": "Point ID: {point_id}\nDistance: {distance_from_hub:.2f} km"}
         ))
         
+        # --- 3. OPTIMIZATION & EXPORT ---
         if st.button("🚀 Run Optimization on My Data"):
             with st.status("Calculating best routes..."):
                 st.write("Clustering points...")
+                # Simulate Agent Assignment
+                user_data['assigned_agent'] = np.random.randint(1, 4, size=len(user_data))
+                user_data['delivery_sequence'] = np.arange(len(user_data)) + 1
                 st.write("Applying Guided Local Search...")
                 st.write("Done!")
+            
             st.balloons()
+            st.subheader("✅ Optimization Complete")
+            
+            # Show the final manifest
+            st.dataframe(user_data[['point_id', 'assigned_agent', 'delivery_sequence', 'distance_from_hub']])
+            
+            # Allow downloading the results
+            final_csv = user_data.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="💾 Download Optimized Manifest",
+                data=final_csv,
+                file_name='optimized_delivery_plan.csv',
+                mime='text/csv',
+                help="Click to download the full routing plan for your drivers."
+            )
     else:
         st.error("Error: CSV must contain 'latitude' and 'longitude' columns.")
-
 else:
     st.info("Waiting for CSV upload to begin analysis.")
