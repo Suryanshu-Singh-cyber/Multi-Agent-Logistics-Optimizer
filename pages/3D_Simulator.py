@@ -51,16 +51,41 @@ df = pd.DataFrame(data)
 # --- PYDECK 3D VISUALIZATION ---
 # Layer 1: The Arcs (Routes)
 # Update the ArcLayer in 3_🚚_3D_Simulator.py to look "Neon"
-layer = pdk.Layer(
-    "ArcLayer",
-    df,
-    get_source_position="from",
-    get_target_position="to",
-    get_source_color=[0, 255, 255, 200], # Neon Cyan
-    get_target_color=[255, 0, 255, 200], # Neon Pink
-    get_width="1 + (traffic_density / 20)", # Lines get thicker in traffic!
-    tilt=15,
+# 1. Define the layers first (Initialize as empty)
+arc_layer = None
+warehouse_layer = None
+
+# 2. Build the layers
+warehouse_layer = pdk.Layer(
+    "ScatterplotLayer",
+    pd.DataFrame([{"pos": warehouse}]),
+    get_position="pos",
+    get_color=[255, 255, 255, 200],
+    get_radius=500,
 )
+
+# Only build arc_layer if we have data
+if not df.empty:
+    arc_layer = pdk.Layer(
+        "ArcLayer",
+        df,
+        get_source_position="from",
+        get_target_position="to",
+        get_source_color="color",
+        get_target_color=[255, 255, 255, 50],
+        get_width=3,
+    )
+
+# 3. Create the list of layers, filtering out any that are None
+active_layers = [l for l in [arc_layer, warehouse_layer] if l is not None]
+
+# 4. Draw the map
+st.pydeck_chart(pdk.Deck(
+    layers=active_layers,  # Use the filtered list here
+    initial_view_state=view_state,
+    map_style=None,
+    tooltip={"text": "{agent}"}
+))
 
 # Layer 2: The Warehouse Glow
 warehouse_layer = pdk.Layer(
