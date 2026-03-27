@@ -51,48 +51,47 @@ st.markdown("""
         border-top: 4px solid #00f2ff;
         margin-bottom: 20px;
         transition: 0.3s;
-        height: 250px;
+        min-height: 220px;
     }
     .feature-card:hover { 
         transform: translateY(-10px); 
         border-top: 4px solid #ff00ff; 
         box-shadow: 0px 10px 20px rgba(0, 242, 255, 0.2);
     }
-    .highlight { color: #00f2ff; font-weight: bold; font-size: 1.1em; }
-    .hero-text { font-size: 3rem; font-weight: 800; color: white; margin-bottom: 0px; }
+    .hero-text { font-size: 3rem; font-weight: 800; color: white; margin-bottom: 10px; line-height: 1.1; }
+    .highlight { color: #00f2ff; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- HERO SECTION ---
-col_hero1, col_hero2 = st.columns([1.5, 1])
+col_hero1, col_hero2 = st.columns([1.2, 1])
 
 with col_hero1:
-    st.markdown('<p class="hero-text">Predicting the Future of <span style="color:#00f2ff;">City Logistics</span></p>', unsafe_allow_html=True)
+    st.markdown('<p class="hero-text">Predicting the Future of <span style="color:#00f2ff;">Autonomous Logistics</span></p>', unsafe_allow_html=True)
     st.markdown("""
         ### **A 4D Multi-Agent Digital Twin**
-        This project bridges the gap between static optimization and the chaos of the real world. 
-        By simulating **Space, Time, and Environment**, we enable autonomous fleets to navigate 
-        New Delhi with unprecedented precision.
+        This system transforms static route data into a living, breathing **Cyber-Physical Simulation**. 
+        By modeling **Space, Time, and Environment**, we solve the 'Last-Mile' puzzle for the modern world.
     """)
-    st.button("🚀 Explore the Fleet (Use Sidebar)")
+    st.info("👈 **Get Started:** Select **4D Simulator** in the sidebar to watch the fleet in action.")
 
 with col_hero2:
-    # Using a reliable Unsplash image for the "Digital Twin" look
-    st.image("https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=2000&auto=format&fit=crop", 
-             caption="Real-time Network Synchronization")
+    # Reliable high-speed delivery/network image from Unsplash Source
+    st.image("https://images.unsplash.com/photo-1580674684081-7617fbf3d745?q=80&w=1000&auto=format&fit=crop", 
+             caption="Real-Time Fleet Execution Engine", use_container_width=True)
 
 st.divider()
 
-# --- THE THREE PILLARS (The "Why") ---
-st.header("🛠️ The Digital Twin Architecture")
+# --- THE THREE PILLARS ---
+st.header("🛠️ Core System Architecture")
 
 c1, c2, c3 = st.columns(3)
 
 with c1:
     st.markdown("""
     <div class="feature-card">
-        <h3>📍 01. The Optimizer</h3>
-        <p>Using <b>Google OR-Tools</b>, we solve the Vehicle Routing Problem (VRP) to find mathematically perfect paths for 10+ agents instantly.</p>
+        <h3>📍 01. Mathematical Optimization</h3>
+        <p>Powered by <b>Google OR-Tools</b>. We find the global minimum for delivery time across multiple agents and complex drop-points.</p>
         <p class="highlight">Intelligence Engine</p>
     </div>
     """, unsafe_allow_html=True)
@@ -101,43 +100,37 @@ with c2:
     st.markdown("""
     <div class="feature-card">
         <h3>⛈️ 02. Environmental Stress</h3>
-        <p>We inject <b>Real-World Physics</b>: Heavy Rain, High Winds, and Battery Decay. We test if the plan survives real-world friction.</p>
-        <p class="highlight">Physics-Aware Simulation</p>
+        <p>Simulation of New Delhi's physics: <b>Rain, Wind, and Battery Decay</b>. Our 4D engine 'stretches' time based on real-world drag.</p>
+        <p class="highlight">Physics-Aware</p>
     </div>
     """, unsafe_allow_html=True)
 
 with c3:
     st.markdown("""
     <div class="feature-card">
-        <h3>🛸 03. 4D Execution</h3>
-        <p>Visualize neon 'comet trails' in a WebGL environment. Predict every vehicle's position, battery, and CO2 impact in real-time.</p>
-        <p class="highlight">Temporal Visualization</p>
+        <h3>🛸 03. Digital Twin Execution</h3>
+        <p>High-fidelity <b>4D Visualization</b> with PyDeck. Watch 'comet-trail' telemetry predict fleet positions with sub-second accuracy.</p>
+        <p class="highlight">WebGL Visualization</p>
     </div>
     """, unsafe_allow_html=True)
 
-# --- SYSTEM FLOW VISUAL ---
-st.divider()
-st.subheader("🔄 Project Pipeline")
-
-st.write("Data Upload (CSV) ➔ Heuristic Optimization (OR-Tools) ➔ 4D Temporal Mapping (PyDeck) ➔ PDF Reporting (Manifest)")
-
 # --- TECH STACK ---
+st.divider()
 st.header("🧬 Tech Stack")
 t1, t2, t3, t4 = st.columns(4)
-t1.metric("Language", "Python 3.10")
+t1.metric("Logic", "Python 3.10")
 t2.metric("Intelligence", "OR-Tools")
-t3.metric("Viz Engine", "PyDeck / WebGL")
-t4.metric("UX Framework", "Streamlit")
+t3.metric("Visualization", "PyDeck GL")
+t4.metric("Interface", "Streamlit")
 
 # --- FOOTER ---
 st.divider()
-st.markdown("""
-    <div style="text-align: center; color: gray;">
-        Built by <b>Suryanshu Singh</b> for the South Asian University Research Sprint<br>
-        Focus: Robotics, Spiking Neural Networks, and Autonomous Systems
+st.markdown(f"""
+    <div style="text-align: center; color: gray; padding: 20px;">
+        Developed by <b>Suryanshu Singh</b> | South Asian University Research Sprint 2026<br>
+        <i>Specialization: Spiking Neural Networks & Autonomous Systems</i>
     </div>
     """, unsafe_allow_html=True)
-
 # -----------------------------
 # UI CONTROLS
 # -----------------------------
