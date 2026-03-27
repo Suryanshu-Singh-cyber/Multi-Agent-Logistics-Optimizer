@@ -50,17 +50,17 @@ def generate_trip_data(num_agents=5):
 
 trips = generate_trip_data()
 
-# --- 4. THE TRIP LAYER (Corrected Syntax) ---
+# --- 4. THE TRIP LAYER (Comet Styling) ---
 trip_layer = pdk.Layer(
     "TripsLayer",
     trips,
     get_path="path",
-    get_timestamps="timestamps", # We now point directly to the list we made
+    get_timestamps="timestamps",
     get_color="color",
-    opacity=0.8,
-    width_min_pixels=5,
+    opacity=0.9,
+    width_min_pixels=8,     # Thicker lines for a "bold" look
     rounded=True,
-    trail_length=150,
+    trail_length=600,       # Much longer tail (try 400 to 800)
     current_time=st.session_state.timer,
 )
 
