@@ -30,96 +30,109 @@ except:
 # # Add a nice visual or a YouTube video link of drones/vans here
 # st.image("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800", caption="Future of Logistics")
 
+import streamlit as st
 
+st.set_page_config(
+    page_title="Logistics Digital Twin", 
+    layout="wide", 
+    page_icon="🛰️"
+)
 
-st.set_page_config(page_title="Logistics Digital Twin", layout="wide", page_icon="🚚")
-
-# --- CUSTOM CSS FOR STYLING ---
+# --- CUSTOM CSS FOR MODERN UI ---
 st.markdown("""
     <style>
-    .main {
-        background-color: #0e1117;
-    }
-    .stMetric {
-        background-color: #1e2130;
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #3e4255;
-    }
+    .main { background-color: #0e1117; }
+    .stMetric { background-color: #1e2130; padding: 15px; border-radius: 10px; border: 1px solid #3e4255; }
     .feature-card {
         background-color: #161b22;
-        padding: 20px;
+        padding: 25px;
         border-radius: 15px;
-        border-left: 5px solid #00f2ff;
+        border-top: 4px solid #00f2ff;
         margin-bottom: 20px;
+        transition: 0.3s;
     }
+    .feature-card:hover { transform: translateY(-5px); border-top: 4px solid #ff00ff; }
+    .highlight { color: #00f2ff; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- HERO SECTION ---
-st.title("🛰️ Multi-Agent Logistics: The 4D Digital Twin")
-st.subheader("Solving the 'Last-Mile' Problem with AI and Spatio-Temporal Intelligence")
+# This high-quality image sets the stage for "4D Digital Twin"
+st.image("http://googleusercontent.com/image_collection/image_retrieval/6266554220892605383_0", 
+         use_container_width=True)
 
-st.image("https://images.unsplash.com/photo-1586769852044-692d6e3703f0?auto=format&fit=crop&q=80&w=2000", 
-         caption="Next-Gen Autonomous Routing Simulation")
+st.title("🛰️ Multi-Agent Logistics: The 4D Digital Twin")
+st.markdown("""
+    ### **Bridging the Gap between Optimization and Reality**
+    Welcome to the next generation of fleet management. This project isn't just a map; it's a **Cyber-Physical Simulation** designed to solve the most complex challenge in modern robotics: **The Last-Mile Delivery.**
+""")
 
 st.divider()
 
-# --- THE PROBLEM STORY ---
-col1, col2 = st.columns([2, 1])
+# --- THE THREE PILLARS (Visual Guide) ---
+st.header("🚀 How the Digital Twin Works")
+col1, col2, col3 = st.columns(3)
 
 with col1:
     st.markdown("""
     <div class="feature-card">
-        <h3>🚨 The Problem: Static Logistics is Failing</h3>
-        <p>In cities like <b>New Delhi</b>, traffic and weather aren't just inconveniences—they are variables that break standard routing algorithms. 
-        Traditional maps only show <b>Where</b> things are. They ignore <b>When</b> things happen.</p>
-        <ul>
-            <li><b>Inefficiency:</b> Vans getting stuck in predictable peak-hour traffic.</li>
-            <li><b>Safety:</b> Drones running out of battery because of unexpected headwinds.</li>
-            <li><b>Waste:</b> High CO2 emissions due to non-optimized idling.</li>
-        </ul>
+        <h2>📍 01. Plan</h2>
+        <p>Using <b>Google OR-Tools</b>, we solve the Vehicle Routing Problem (VRP). We calculate the shortest, most efficient paths for a fleet of multiple agents simultaneously.</p>
+        <p class="highlight">→ High Intelligence</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
-    st.lottie = "https://assets5.lottiefiles.com/packages/lf20_kz9pjc9x.json" # Placeholder for animation logic
-    st.info("💡 **Did you know?** Last-mile delivery accounts for 53% of total shipping costs. Optimization isn't just cool—it's profitable.")
+    st.markdown("""
+    <div class="feature-card">
+        <h2>⛈️ 02. Stress-Test</h2>
+        <p>We apply real-world constraints: <b>Heavy Rain, High Winds, and Battery Decay</b>. We test if the plan survives the chaos of New Delhi's environment.</p>
+        <p class="highlight">→ Physics-Aware</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-# --- THE 4D SOLUTION ---
-st.header("🛠️ Our Solution: The 4D Approach")
-c1, c2, c3 = st.columns(3)
+with col3:
+    st.markdown("""
+    <div class="feature-card">
+        <h2>🛸 03. Execute</h2>
+        <p>We visualize the result in <b>4D Space-Time</b>. Watch neon 'comet trails' move across the map, predicting every vehicle's position down to the second.</p>
+        <p class="highlight">→ Real-Time 4D</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-with c1:
-    st.markdown("### 📍 Phase 1: Optimizer")
-    st.write("Using **Google OR-Tools**, we calculate the mathematically perfect route for multiple agents simultaneously.")
-
-with c2:
-    st.markdown("### ⛈️ Phase 2: Stress-Testing")
-    st.write("We inject **Real-World Physics** (Rain, Wind, Battery Drain) into the simulation to see how the plan survives chaos.")
-
-with c3:
-    st.markdown("### 📊 Phase 3: 4D Twin")
-    st.write("A high-fidelity **Digital Twin** visualizes the fleet's execution across space and time in a 3D environment.")
-
-# --- TECH STACK RADAR ---
+# --- TECH STACK SECTION ---
 st.divider()
-st.header("🧬 The Tech Stack")
-tech_col1, tech_col2, tech_col3, tech_col4 = st.columns(4)
+st.header("🧬 Engineering Core")
+t1, t2, t3, t4 = st.columns(4)
 
-tech_col1.metric("Language", "Python 3.10")
-tech_col2.metric("Intelligence", "OR-Tools / ML")
-tech_col3.metric("Visualization", "PyDeck / 4D")
-tech_col4.metric("Interface", "Streamlit Cloud")
+with t1:
+    st.write("🐍 **Language**")
+    st.info("Python 3.10")
+with t2:
+    st.write("🧠 **Optimization**")
+    st.info("Google OR-Tools")
+with t3:
+    st.write("🛰️ **Visualization**")
+    st.info("PyDeck (WebGL)")
+with t4:
+    st.write("☁️ **Deployment**")
+    st.info("Streamlit Cloud")
 
-# --- NAVIGATION CALL TO ACTION ---
+# --- FOOTER & CONTACT ---
 st.divider()
-st.success("👈 **Ready to explore? Use the Sidebar to navigate through the Optimizer and the 4D Simulator.**")
+st.success("👈 **Explore the Fleet: Select '4D Simulator' or 'QA Tester' from the sidebar to begin.**")
 
-st.markdown("""
-    ---
-    **Built for the South Asian University Research Sprint** *Developer: Suryanshu Singh* *Focus: Multi-Agent Systems & Robotics*
-""")
+# Professional Footer
+f1, f2 = st.columns([3, 1])
+with f1:
+    st.markdown("""
+        **Project for South Asian University Research Sprint** *Focus: Spiking Neural Networks, Robotics, and Event-Based Vision.*
+    """)
+with f2:
+    st.markdown("[LinkedIn](https://www.linkedin.com/) | [GitHub](https://github.com/)")
+
+
+
 # -----------------------------
 # UI CONTROLS
 # -----------------------------
