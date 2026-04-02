@@ -151,7 +151,7 @@ t4.metric("UX Framework", "Streamlit")
 st.divider()
 st.markdown(f"""
     <div style="text-align: center; color: gray; padding: 20px;">
-        Developed by <b>Suryanshu Singh</b> | South Asian University Research Sprint<br>
+        Developed by <b>Suryanshu Singh</b> | South Asian University<br>
         <i>Specialization: Spiking Neural Networks, Robotics, & Event-Based Vision</i>
     </div>
     """, unsafe_allow_html=True)
